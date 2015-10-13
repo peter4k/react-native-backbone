@@ -7,11 +7,11 @@ As react native does not support Node.js HTTP module, I create this simple exper
 
 to use this kit:
 ```
-RestKit.send('[url]', [request object], function(error, json){
+RestKit.send('URL', REQUEST-OBJECT, function(error, json){
                 if(error)
                     console.log("encoutered error: ", error);
                 console.log(json);
             });
 ```
 
-* request object: the same object used for fetch()
+* REQUEST-OBJECT: the same object used for fetch()
