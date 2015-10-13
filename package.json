@@ -1,0 +1,24 @@
+{
+  "name": "react-native-rest-kit",
+  "version": "0.0.1",
+  "description": "A React Native RESTful API kit that use the fetch method",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/peter4k/react-native-rest-kit.git"
+  },
+  "keywords": [
+    "react-native",
+    "http",
+    "rest"
+  ],
+  "author": "Yi Wang <yiwang20@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/peter4k/react-native-rest-kit/issues"
+  },
+  "homepage": "https://github.com/peter4k/react-native-rest-kit#readme"
+}
