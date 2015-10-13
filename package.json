@@ -1,6 +1,6 @@
 {
   "name": "react-native-rest-kit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A React Native RESTful API kit that use the fetch method",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/peter4k/react-native-rest-kit/issues"
   },
-  "homepage": "https://github.com/peter4k/react-native-rest-kit#readme"
+  "homepage": "https://github.com/peter4k/react-native-rest-kit#readme",
+   "dependencies" : { 
+   	"underscore" : "1.8.3"
+  }
 }
