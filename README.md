@@ -7,7 +7,7 @@ As react native does not support Node.js HTTP module, I create this simple exper
 
 1. [Setup](https://github.com/peter4k/react-native-rest-kit#install)
 2. [RestKit.Model](https://github.com/peter4k/react-native-rest-kit#restkitmodel)
-3. [RestKit.send()](https://github.com/peter4k/react-native-rest-kit#restKitsend)
+3. [RestKit.send()](https://github.com/peter4k/react-native-rest-kit#restkitsend)
 
 ## Install
 RestKit requires underscore.
