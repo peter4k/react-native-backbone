@@ -15,12 +15,13 @@ var Car = RestKit.Model.extend({
 	rootUrl = "http://www.your-domain.com/car"
 	//More options to be added
 });
+```
 
 rootUrl: the root url where this model connects to.
 * value: `String` or `function`. If its a function it should return a string.
 
 #### Create an instance
-```var car = new Car({
+var car = new Car({
 	"make": "BMW",
 	"model": "428i",
 	"year": 2014
