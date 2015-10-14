@@ -16,17 +16,17 @@ var Car = RestKit.Model.extend({
 	//More options to be added
 });
 ```
-
 rootUrl: the root url where this model connects to.
 * value: `String` or `function`. If its a function it should return a string.
 
 #### Create an instance
+```
 var car = new Car({
 	"make": "BMW",
 	"model": "428i",
 	"year": 2014
 })
-####
+```
 You can create a model using the `new` keyword. You can pass an object as the initial value of the model, you can also create an empty model.
 
 #### Model methods:
@@ -59,8 +59,6 @@ people.isNew();
 ```
 This will return ture if "id" attribute does not exist
 
-###
-### 
 
 ## Send simple HTTP request
 This is based on the React Native fetch method. It has a simple error checking to check if the response status is not 200.
@@ -88,6 +86,5 @@ RestKit.send(url, request, function(error, json){
                 console.log(json);
             });
 ```
-
-* request object: the same object used for fetch()
+request object: the same object used for fetch()
 
