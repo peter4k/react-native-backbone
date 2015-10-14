@@ -5,7 +5,63 @@ As react native does not support Node.js HTTP module, I create this simple exper
 * Add an extra layer of the fetch method to check if the status API returns is not 200.
 * Returns an json file instead of response object
 
-### Send simple HTTP request
+
+## RestKit.Model
+RestKit.Model is brought from backbone. It is used almost the same as Backbone.Model, but only part of the functions are implemented. 
+
+#### Create a model class
+```
+var Car = RestKit.Model.extend({
+	rootUrl = "http://www.your-domain.com/car"
+	//More options to be added
+});
+
+rootUrl: the root url where this model connects to.
+* value: `String` or `function`. If its a function it should return a string.
+
+#### Create an instance
+```var car = new Car({
+	"make": "BMW",
+	"model": "428i",
+	"year": 2014
+})
+####
+You can create a model using the `new` keyword. You can pass an object as the initial value of the model, you can also create an empty model.
+
+#### Model methods:
+### set:
+```
+people.set('mpg', '23')
+```
+this will set the atrribute mpg to 23.
+* If the attribute does not exist, this attribute will be added to the model.
+* If the attribute does exist, the value will be replaced.
+
+You can also pass a json object as the argument:
+```
+people.set({
+	"mpg": 23,
+	"color": "white"
+})
+```
+
+### unset:
+```
+people.unset('mpg', '23')
+```
+The attribute "mpg" will be deleted
+* Unset does not take json object or array as argument.
+
+### isNew():
+```
+people.isNew();
+```
+This will return ture if "id" attribute does not exist
+
+###
+### 
+
+## Send simple HTTP request
 This is based on the React Native fetch method. It has a simple error checking to check if the response status is not 200.
 The returned object is a json instead of a response object
 
@@ -34,5 +90,3 @@ RestKit.send(url, request, function(error, json){
 
 * request object: the same object used for fetch()
 
-### RestKit.Model
-RestKit.Model is brought from backbone. It is used almost the same as Backbone.Model, but only part of the functions are implemented. 
