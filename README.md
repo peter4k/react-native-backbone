@@ -5,6 +5,10 @@ As react native does not support Node.js HTTP module, I create this simple exper
 * Add an extra layer of the fetch method to check if the status API returns is not 200.
 * Returns an json file instead of response object
 
+## Install
+RestKit requires underscore.
+The easiest way to install: `npm install react-native-rest-kit`
+And require it in your React Native app: `var RestKit = require('react-native-rest-kit);`
 
 ## RestKit.Model
 RestKit.Model is brought from backbone. It is used almost the same as Backbone.Model, but only part of the functions are implemented. 
