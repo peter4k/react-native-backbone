@@ -1,5 +1,5 @@
-
 var _ = require('underscore');
+var AsyncStorage = require('react-native').AsyncStorage;
 
 var RestKit = {}
 RestKit.globalOptions = {};
@@ -9,7 +9,6 @@ RestKit.send = function(url, req, callback){
     var error = [];
     if(!req.method) error.push("Method not defined");
     if(error.length > 0) return callback(error, null);
-    console.log(url, req);
     fetch(url, req)
     .then((response) => {
         if(response.status != 200){
@@ -104,6 +103,32 @@ _.extend(Model.prototype, {
         return base.replace(/[^\/]$/, '$&/') + encodeURIComponent(id);
     },
 
+    saveToLocalStorage: function(storageKey, callback){
+        if (typeof storageKey == 'function') {
+            var storageKey = uniqueName();
+        }
+        if (storageKey.length <= 0){
+            throw new Error("Storage Key must be specified");
+        }
+        AsyncStorage.setItem(storageKey, JSON.stringify(this.attributes))
+        .then(callback)
+        .catch(callback);
+    },
+
+    getFromLocalStorage: function(storageKey, callback){
+        if (typeof storageKey == 'function') {
+            var storageKey = uniqueName();
+        }
+        if (storageKey.length <= 0){
+            throw new Error("Storage Key must be specified");
+        }
+        AsyncStorage.getItem(storageKey)
+        .then((json) => {
+            this.attributes = JSON.parse(json);
+            callback(null);
+        })
+        .catch(callback);
+    }
 });
 
 var extend = function(protoProps, staticProps) {
@@ -176,8 +201,6 @@ RestKit.sync = function(method, model, options, callback) {
     if (!options.url) {
         url = _.result(model, 'url') || urlError();
     }
-
-    console.log(url);
 
     RestKit.send(url, request, function(error, json){
         model.set(json);
