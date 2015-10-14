@@ -2,12 +2,14 @@
 var _ = require('underscore');
 
 var RestKit = {}
+RestKit.globalOptions = {};
+
 //Static method
 RestKit.send = function(url, req, callback){
     var error = [];
     if(!req.method) error.push("Method not defined");
     if(error.length > 0) return callback(error, null);
-
+    console.log(url, req);
     fetch(url, req)
     .then((response) => {
         if(response.status != 200){
@@ -26,30 +28,7 @@ RestKit.send = function(url, req, callback){
     });
 }
 
-
 //Model
-// var Model = function(options, obj){
-//     this.attributes = {};
-//     this.set(obj);
-// }
-
-// Model.prototype.set = function(field, value){
-//     if(field == null) return this;
-//
-//     var obj;
-//     if (typeof field === 'object'){
-//         obj = field;
-//     }else{
-//         obj = {};
-//         obj[field] = value;
-//     }
-//     for(var field in obj) {
-//         if (obj[field] !== undefined) {
-//             this.attributes[field] = obj[field];
-//         }
-//     }
-// }
-
 var Model = RestKit.Model = function(attributes) {
     var attrs = attributes || {};
     this.attributes = {};
@@ -59,13 +38,11 @@ var Model = RestKit.Model = function(attributes) {
 
 // Attach all inheritable methods to the Model prototype.
 _.extend(Model.prototype, {
+    idAttribute: '_id',
     initialize: function(){},
     toJSON: function(options) {
         return _.clone(this.attributes);
     },
-    // sync: function() {
-    //   return Backbone.sync.apply(this, arguments);
-    // },
     get: function(attr) {
         return this.attributes[attr];
     },
@@ -99,63 +76,22 @@ _.extend(Model.prototype, {
         delete this.attributes[attr];
     },
 
-    fetch: function(options) {
-        var request = {
-
-        }
+    isNew: function() {
+        return !this.has(this.idAttribute);
     },
 
-    save: function(key, val, options) {
-        console.log(this.url());
-        return;
-        // Handle both `"key", value` and `{key: value}` -style arguments.
-        var attrs;
-        if (key == null || typeof key === 'object') {
-            attrs = key;
-            options = val;
-        } else {
-            (attrs = {})[key] = val;
-        }
+    fetch: function(options, callback) {
+        if(this.isNew()) throw new Error('Cannot fetch model without Id');
+        return RestKit.sync('GET', this, options, callback);
+    },
 
-        options = _.extend({validate: true, parse: true}, options);
-        var wait = options.wait;
+    save: function(options, callback) {
+        var method = (this.isNew()) ? 'POST' : 'PUT'
+        return RestKit.sync('POST', this, options, callback);
+    },
 
-        // If we're not waiting and attributes exist, save acts as
-        // `set(attr).save(null, opts)` with validation. Otherwise, check if
-        // the model will be valid when the attributes, if any, are set.
-        if (attrs && !wait) {
-            if (!this.set(attrs, options)) return false;
-        } else {
-            if (!this._validate(attrs, options)) return false;
-        }
-
-        // After a successful server-side save, the client is (optionally)
-        // updated with the server-side state.
-        var model = this;
-        var success = options.success;
-        var attributes = this.attributes;
-        options.success = function(resp) {
-            // Ensure attributes are restored during synchronous saves.
-            model.attributes = attributes;
-            var serverAttrs = options.parse ? model.parse(resp, options) : resp;
-            if (wait) serverAttrs = _.extend({}, attrs, serverAttrs);
-            if (serverAttrs && !model.set(serverAttrs, options)) return false;
-            if (success) success.call(options.context, model, resp, options);
-            model.trigger('sync', model, resp, options);
-        };
-        wrapError(this, options);
-
-        // Set temporary attributes if `{wait: true}` to properly find new ids.
-        if (attrs && wait) this.attributes = _.extend({}, attributes, attrs);
-
-        var method = this.isNew() ? 'create' : (options.patch ? 'patch' : 'update');
-        if (method === 'patch' && !options.attrs) options.attrs = attrs;
-        var xhr = this.sync(method, this, options);
-
-        // Restore attributes.
-        this.attributes = attributes;
-
-        return xhr;
+    destroy: function(option, callback) {
+        return RestKit.sync('DELETE', this, options, callback);
     },
 
     url: function() {
@@ -163,7 +99,7 @@ _.extend(Model.prototype, {
         _.result(this, 'urlRoot') ||
         _.result(this.collection, 'url') ||
         urlError();
-        // if (this.isNew()) return base;
+        if (this.isNew()) return base;
         var id = this.get(this.idAttribute);
         return base.replace(/[^\/]$/, '$&/') + encodeURIComponent(id);
     },
@@ -202,5 +138,59 @@ var extend = function(protoProps, staticProps) {
 Model.extend = extend;
 
 RestKit.Model = Model;
+
+RestKit.sync = function(method, model, options, callback) {
+
+    if(typeof options === 'function'){
+        callback = options;
+        options = null;
+    }
+    options = options || {};
+
+    var request = {
+        method: method,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }
+
+    if(method != 'GET' && method != 'HEAD'){
+        request['body'] = JSON.stringify(model.toJSON());
+    }
+
+    if(RestKit.globalOptions.headers){
+        for(header in RestKit.globalOptions.headers){
+            request.headers[header] = RestKit.globalOptions.headers[header];
+        }
+    }
+
+    if(options.headers){
+        for(header in options.headers){
+            request.headers[header] = options.headers[header];
+        }
+    }
+
+    var url;
+
+    if (!options.url) {
+        url = _.result(model, 'url') || urlError();
+    }
+
+    console.log(url);
+
+    RestKit.send(url, request, function(error, json){
+        model.set(json);
+        if(callback){
+            callback(error, json);
+        }
+    })
+
+    return;
+};
+
+var urlError = function() {
+    throw new Error('A "url" property or function must be specified');
+};
 
 module.exports = RestKit;
