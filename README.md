@@ -7,7 +7,9 @@ As react native does not support Node.js HTTP module, I create this simple exper
 
 ## Install
 RestKit requires underscore.
+
 The easiest way to install: `npm install react-native-rest-kit`
+
 And require it in your React Native app: `var RestKit = require('react-native-rest-kit);`
 
 ## RestKit.Model
