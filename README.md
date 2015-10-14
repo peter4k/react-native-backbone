@@ -5,6 +5,10 @@ As react native does not support Node.js HTTP module, I create this simple exper
 * Add an extra layer of the fetch method to check if the status API returns is not 200.
 * Returns an json file instead of response object
 
+[1. Setup](https://github.com/peter4k/react-native-rest-kit#install)
+[2. RestKit.Model](https://github.com/peter4k/react-native-rest-kit#RestKit.Model)
+[3. RestKit.send()](https://github.com/peter4k/react-native-rest-kit#RestKit.send())
+
 ## Install
 RestKit requires underscore.
 
@@ -118,7 +122,8 @@ RestKit.globalOption.headers:{
 ```
 The headers to be included in every request.
 
-## Send simple HTTP request
+## RestKit.send()
+Send simple HTTP request
 This is based on the React Native fetch method. It has a simple error checking to check if the response status is not 200.
 The returned object is a json instead of a response object
 
