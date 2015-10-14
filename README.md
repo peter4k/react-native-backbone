@@ -23,7 +23,9 @@ var request = {
     })
 }
 
-RestKit.send('https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA', request, function(error, json){
+var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA';
+
+RestKit.send(url, request, function(error, json){
                 if(error)
                     console.log("encoutered error: ", error);
                 console.log(json);
@@ -31,3 +33,6 @@ RestKit.send('https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amp
 ```
 
 * request object: the same object used for fetch()
+
+### RestKit.Model
+RestKit.Model is brought from backbone. It is used almost the same as Backbone.Model, but only part of the functions are implemented. 
