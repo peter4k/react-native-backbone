@@ -6,8 +6,8 @@ As react native does not support Node.js HTTP module, I create this simple exper
 * Returns an json file instead of response object
 
 1. [Setup](https://github.com/peter4k/react-native-rest-kit#install)
-2. [RestKit.Model](https://github.com/peter4k/react-native-rest-kit#RestKit.Model)
-3. [RestKit.send()](https://github.com/peter4k/react-native-rest-kit#RestKit.send())
+2. [RestKit.Model](https://github.com/peter4k/react-native-rest-kit#restkitmodel)
+3. [RestKit.send()](https://github.com/peter4k/react-native-rest-kit#restKitsend)
 
 ## Install
 RestKit requires underscore.
