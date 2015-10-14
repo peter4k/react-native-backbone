@@ -30,7 +30,7 @@ var car = new Car({
 You can create a model using the `new` keyword. You can pass an object as the initial value of the model, you can also create an empty model.
 
 #### Model methods:
-### set:
+##### set():
 ```
 people.set('mpg', '23')
 ```
@@ -46,19 +46,71 @@ people.set({
 })
 ```
 
-### unset:
+##### unset():
 ```
 people.unset('mpg', '23')
 ```
 The attribute "mpg" will be deleted
 * Unset does not take json object or array as argument.
 
-### isNew():
+##### isNew():
 ```
 people.isNew();
 ```
 This will return ture if "id" attribute does not exist
 
+##### save():
+```
+var option = {
+	headers:{
+		"Authentiacation":"Bearer SOME_TOKEN"
+	}
+}
+
+people.save(option, function(error){
+    if(error) console.log(error);
+    console.log(people);
+});
+```
+Save this model to the server, this is POST for new model and PUT for existing model
+* option: (optional)
+** option.headers: the headers to be added to the HTTP request
+
+##### fetch():
+```
+people = new People({
+	id: 1
+});
+
+people.fetch(function(error){
+    if(error) console.log(error);
+    console.log(people);
+});
+```
+Fetch this model from the server, this is GET request
+* To fetch an model, ID has to be set.
+* option: (optional)
+** option.headers: the headers to be added to the HTTP request
+
+##### delete():
+```
+people.delete(option, function(error){
+    if(error) console.log(error);
+});
+```
+Delete this model to the server, this is DELETE method
+* To delete an model, ID has to be set.
+* option: (optional)
+** option.headers: the headers to be added to the HTTP request
+
+#### RestKit.globalOption
+##### RestKit.globalOption.headers
+```
+RestKit.globalOption.headers:{
+	"Authentiacation":"Bearer SOME_TOKEN"
+}
+```
+The headers to be included in every request.
 
 ## Send simple HTTP request
 This is based on the React Native fetch method. It has a simple error checking to check if the response status is not 200.
