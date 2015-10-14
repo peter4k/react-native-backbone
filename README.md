@@ -7,6 +7,7 @@ As react native does not support Node.js HTTP module, I create this simple exper
 
 1. [Setup](https://github.com/peter4k/react-native-rest-kit#install)
 2. [RestKit.Model](https://github.com/peter4k/react-native-rest-kit#restkitmodel)
+3. [AsyncStorage]
 3. [RestKit.send()](https://github.com/peter4k/react-native-rest-kit#restkitsend)
 
 ## Install
@@ -121,6 +122,25 @@ RestKit.globalOption.headers:{
 }
 ```
 The headers to be included in every request.
+
+## Local Storage
+RestKit take advantage of AsycnStorage of React Native to allow you to store an instance of a model (or collection) to the local storage of your device, and conveniently retrieve it.
+
+#### Model.saveToLocalStorage(unique_key, callback)
+```
+var car = new Car({"make":"bmw"});
+car.saveToLocalStorage("default_car", function(error){
+	if(!error) console.log('saved');
+});
+```
+
+#### Model.getFromLocalStorage(unique_key, callback)
+```
+var car = new Car();
+car.getFromLocalStorage("default_car", function(error){
+	if(!error) console.log(car);
+});
+```
 
 ## RestKit.send()
 Send simple HTTP request
