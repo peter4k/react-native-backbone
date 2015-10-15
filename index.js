@@ -15,6 +15,7 @@ RestKit.send = function(url, req, callback){
             var error = {};
             error.status = response.status;
             error.statusText = response.statusText;
+            error.body = response._bodyText;
             return callback(error, null);
         }
         return response.json();
@@ -122,12 +123,12 @@ _.extend(Model.prototype, {
         if (storageKey.length <= 0){
             throw new Error("Storage Key must be specified");
         }
-        AsyncStorage.getItem(storageKey)
-        .then((json) => {
-            this.attributes = JSON.parse(json);
-            callback(null);
-        })
-        .catch(callback);
+        var self = this;
+        AsyncStorage.getItem(storageKey, function(error, string){
+            if (error) return callback(error);
+            self.attributes = JSON.parse(string) || self.attributes;
+            return callback(null);
+        });
     }
 });
 
