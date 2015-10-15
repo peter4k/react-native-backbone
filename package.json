@@ -1,6 +1,6 @@
 {
   "name": "react-native-rest-kit",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A React Native RESTful API kit that use the fetch method",
   "main": "index.js",
   "scripts": {
