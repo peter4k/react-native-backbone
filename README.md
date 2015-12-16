@@ -147,7 +147,7 @@ car.getFromLocalStorage("default_car", function(error){
 
 ## RestKit.send()
 Send simple HTTP request
-This is based on the React Native fetch method. It has a simple error checking to check if the response status is not 200.
+This is based on the React Native fetch method. It has a simple error checking to check if the response status is not between 200-208 or 226.
 The returned object is a json instead of a response object
 
 ```
