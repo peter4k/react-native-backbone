@@ -11,7 +11,7 @@ RestKit.send = function(url, req, callback){
     if(error.length > 0) return callback(error, null);
     fetch(url, req)
     .then((response) => {
-        if(response.status != 200){
+        if(!((response.status >= 200 && response.status <= 208) || (response.status === 226))) {
             var error = {};
             error.status = response.status;
             error.statusText = response.statusText;
