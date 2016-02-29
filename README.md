@@ -26,7 +26,7 @@ RestKit.Model is brought from backbone. It is used almost the same as Backbone.M
 #### Create a model class
 ```
 var Car = RestKit.Model.extend({
-	rootUrl = "http://www.your-domain.com/car"
+	urlRoot = "http://www.your-domain.com/car"
 	//More options to be added
 });
 ```
@@ -93,7 +93,7 @@ Save this model to the server, this is POST for new model and PUT for existing m
 ##### fetch():
 ```
 people = new People({
-	id: 1
+	_id: 1
 });
 
 people.fetch(function(error){
