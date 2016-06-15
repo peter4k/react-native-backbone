@@ -1,6 +1,9 @@
 import Backbone from 'backbone';
+import fetchStorage from './storages/fetch';
 
-var RNBackbone = {};
+var RNBackbone = {
+    storage: fetchStorage
+};
 
 RNBackbone.Model = Backbone.Model.extend({
     sync: function () {
