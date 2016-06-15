@@ -1,5 +1,5 @@
 {
-  "name": "react-native-rest-kit",
+  "name": "react-native-backbone",
   "version": "0.1.0",
   "description": "A React Native RESTful API kit that use the fetch method",
   "main": "src/index.js",
