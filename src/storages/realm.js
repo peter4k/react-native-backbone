@@ -123,8 +123,7 @@ var realm = {
     },
     findModelObjects: function (models) {
         if (models instanceof Backbone.Collection) {
-            // _.each(models.model, () = >)
-            //TODO: find for collections
+            //TODO: find for collections, this will be required if we want to implement Sync of local and API
         } else {
             var schema = models.realmSchema,
                 primaryKeyAttr = schema.primaryKey,

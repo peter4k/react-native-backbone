@@ -11,8 +11,8 @@ import {
     Text,
     View
 } from 'react-native';
-// import Example from './app/fetch'; //Example using Fetch
-import Example from './app/realm'; //Example using Realm
+import Example from './app/fetch'; //Example using Fetch
+// import Example from './app/realm'; //Example using Realm
 
 class example extends Component {
     render() {
@@ -22,7 +22,7 @@ class example extends Component {
                     Welcome to React Native Backbone!
                 </Text>
                 <Text style={styles.instructions}>
-                    This is an example of React Native Backbone using "fetchStorage"
+                    You can comment out FetchStorage and try using Realm for local storage
                 </Text>
                 <Example />
             </View>
