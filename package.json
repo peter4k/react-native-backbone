@@ -1,6 +1,6 @@
 {
   "name": "react-native-rest-kit",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "A React Native RESTful API kit that use the fetch method",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/peter4k/react-native-rest-kit.git"
+    "url": "git+ssh://git@github.com/peter4k/react-native-backbone.git"
   },
   "keywords": [
     "react-native",
@@ -18,10 +18,13 @@
   "author": "Yi Wang <yiwang20@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/peter4k/react-native-rest-kit/issues"
+    "url": "https://github.com/peter4k/react-native-backbone/issues"
   },
-  "homepage": "https://github.com/peter4k/react-native-rest-kit#readme",
+  "homepage": "https://github.com/peter4k/react-native-backbone#readme",
    "dependencies" : { 
-   	"underscore" : "1.8.3"
+    "backbone": "^1.3.3",
+    "realm": "^0.13.2",
+    "shortid": "^2.2.6",
+    "underscore": "^1.8.3"
   }
 }
