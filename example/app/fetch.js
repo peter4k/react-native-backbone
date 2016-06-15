@@ -1,17 +1,54 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     Text,
     View
 } from 'react-native';
-import {RNBackbone} from 'react-native-rest-kit';
+import RNBackbone from 'react-native-backbone';
+import fetchStorage from 'react-native-backbone/src/storages/fetch';
 
-// var businesses =
-// realmStorage.init({
-//     models: [TableModel]
-// });
+class FetchStorageExample extends Component {
 
-RNBackbone.storage = fetchStorage;
+    constructor() {
+        super();
+        this.state = {
+            isLoading: true
+        };
 
-fetchStorage.globalOptions.headers = {
-    "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IjFAMS5jb20iLCJpYXQiOjE0NjE0NzY4MzB9.VSx6O_qYgEl6w2ltn5Ac6wn7u8eEJfHzDklw1gf051U"
-};
+        fetchStorage.globalOptions.headers = {
+            "Authorization": "Bearer AUTH_TOKEN"
+        };
+
+        var Businesses = RNBackbone.Collection.extend({
+            url: 'http://YOUR_URL/business'
+        });
+
+        var businesses = this.business = new Businesses();
+
+        businesses.fetch({
+            success: () => {
+                this.setState({isLoading: false});
+            },
+            error: (model, error) => {
+                console.log(error);
+            }
+        });
+    }
+
+    render() {
+        if (this.state.isLoading) {
+            return (
+                <View>
+                    <Text>Fetching from API, please wait...</Text>
+                </View>
+            )
+        } else {
+            return (
+                <View>
+                    <Text>Successfully fetched {this.business.length} models from REST api</Text>
+                </View>
+            )
+        }
+    }
+}
+
+export default FetchStorageExample;
