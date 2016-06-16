@@ -9,8 +9,8 @@ As react native does not support Node.js HTTP module, react-native-backbone help
 To do:
 * syncronize with localStorage
 
-1. [Setup](https://github.com/peter4k/react-native-backbone#install)
-2. [RNBackbone.Model](https://github.com/peter4k/react-native-backbone#rnbackbonemodel)
+1. [Setup](#install)
+2. [RNBackbone.Model](#rnbackbonemodel)
 
 ## Install
 
