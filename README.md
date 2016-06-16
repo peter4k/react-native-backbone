@@ -14,7 +14,7 @@ To do:
 * [RNBackbone.Collection](#rnbackbonecollection)
 * [RNBackbone.Storage](#storage)
 	* [fetchStorage](#fetchstorage)
-	* [realmStorage](#realmstorage)
+	* [realmStorage](#realm)
 
 ## Install
 
