@@ -1,12 +1,13 @@
-# React-native-rest-kit
+# react-native-backbone
 
-As react native does not support Node.js HTTP module, I create this simple experiemental rest kit using the built in "fetch" method.
-* The purpose of this kit is to build a backbone-like model structure. So that you can simply call "save", "update", "fetch" method on each model.
+As react native does not support Node.js HTTP module, react-native-backbone helps you to connect to your REST api or localStorage much easier using the same concept of Backbone models and collections.
+* You can simply call "save", "fetch", "destroy" method on each model to sycn them to your REST api.
+* "fetch" collections from REST api.
+* Using model.get() to retrieve data from model
 * Add an extra layer of the fetch method to check if the status API returns is not 200. Returns an json file instead of response object.
 
 To do:
-* Implement "collection"
-* Implement event listeners
+* syncronize with localStorage
 
 1. [Setup](https://github.com/peter4k/react-native-rest-kit#install)
 2. [RestKit.Model](https://github.com/peter4k/react-native-rest-kit#restkitmodel)
@@ -14,18 +15,17 @@ To do:
 4. [RestKit.send()](https://github.com/peter4k/react-native-rest-kit#restkitsend)
 
 ## Install
-RestKit requires underscore.
 
-The easiest way to install: `npm install react-native-rest-kit`
+The easiest way to install: `npm install react-native-backbone`
 
-And require it in your React Native app: `var RestKit = require('react-native-rest-kit);`
+And require it in your React Native app: `var RNBackbone = require('react-native-backbone');` or ES6: `import RNBackbone from 'react-native-backbone'`;
 
-## RestKit.Model
-RestKit.Model is brought from backbone. It is used almost the same as Backbone.Model, but only part of the functions are implemented. 
+## RNBackbone.Model
+RNBackbone.Model is extended from backbone. The usages is almost the same as Backbone.Model, but some methods might be differnt. 
 
 #### Create a model class
 ```
-var Car = RestKit.Model.extend({
+var Car = RNBackbone.Model.extend({
 	rootUrl = "http://www.your-domain.com/car"
 	//More options to be added
 });
@@ -35,7 +35,7 @@ rootUrl: the root url where this model connects to.
 
 #### Create an instance
 ```
-var car = new Car({
+var bmw = new Car({
 	"make": "BMW",
 	"model": "428i",
 	"year": 2014
@@ -46,7 +46,7 @@ You can create a model using the `new` keyword. You can pass an object as the in
 #### Model methods:
 ##### set():
 ```
-people.set('mpg', '23')
+bmw.set('mpg', '23')
 ```
 this will set the atrribute mpg to 23.
 * If the attribute does not exist, this attribute will be added to the model.
@@ -54,7 +54,7 @@ this will set the atrribute mpg to 23.
 
 You can also pass a json object as the argument:
 ```
-people.set({
+bmw.set({
 	"mpg": 23,
 	"color": "white"
 })
@@ -62,14 +62,14 @@ people.set({
 
 ##### unset():
 ```
-people.unset('mpg', '23')
+bmw.unset('mpg', '23')
 ```
 The attribute "mpg" will be deleted
 * Unset does not take json object or array as argument.
 
 ##### isNew():
 ```
-people.isNew();
+bmw.isNew();
 ```
 This will return ture if "id" attribute does not exist
 
@@ -81,7 +81,7 @@ var option = {
 	}
 }
 
-people.save(option, function(error){
+bmw.save(option, function(error){
     if(error) console.log(error);
     console.log(people);
 });
@@ -92,11 +92,11 @@ Save this model to the server, this is POST for new model and PUT for existing m
 
 ##### fetch():
 ```
-people = new People({
+bmw = new Car({
 	id: 1
 });
 
-people.fetch(function(error){
+bmw.fetch(function(error){
     if(error) console.log(error);
     console.log(people);
 });
@@ -108,7 +108,7 @@ Fetch this model from the server, this is GET request
 
 ##### delete():
 ```
-people.delete(option, function(error){
+bmw.delete(option, function(error){
     if(error) console.log(error);
 });
 ```
@@ -117,35 +117,22 @@ Delete this model to the server, this is DELETE method
 * option: (optional)
 ** option.headers: the headers to be added to the HTTP request
 
-#### RestKit.globalOption
-##### RestKit.globalOption.headers
+## Storage
+As of react-native-backbone 0.1.0, we provides two different storage connectors.
+
+### fetchStorage
+fetchStorage is the default storage connectors used by RNBackbone. It uses the built-in "fetch" method of React-Native
+
+#### fetchStorage.globalOption.headers
+If you want to send some headers in every request, you can set it up here.
 ```
-RestKit.globalOption.headers:{
+import fetchStorage from 'react-native-backbone/src/storages/fetch'
+fetchStorage.globalOption.headers:{
 	"Authentiacation":"Bearer SOME_TOKEN"
 }
 ```
-The headers to be included in every request.
 
-## Local Storage
-RestKit take advantage of AsycnStorage of React Native to allow you to store an instance of a model (or collection) to the local storage of your device, and conveniently retrieve it.
-
-#### Model.saveToLocalStorage(unique_key, callback)
-```
-var car = new Car({"make":"bmw"});
-car.saveToLocalStorage("default_car", function(error){
-	if(!error) console.log('saved');
-});
-```
-
-#### Model.getFromLocalStorage(unique_key, callback)
-```
-var car = new Car();
-car.getFromLocalStorage("default_car", function(error){
-	if(!error) console.log(car);
-});
-```
-
-## RestKit.send()
+#### fetchStorage.send()
 Send simple HTTP request
 This is based on the React Native fetch method. It has a simple error checking to check if the response status is not between 200-208 or 226.
 The returned object is a json instead of a response object
@@ -166,7 +153,7 @@ var request = {
 
 var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA';
 
-RestKit.send(url, request, function(error, json){
+fetchStorage.send(url, request, function(error, json){
                 if(error)
                     console.log("encoutered error: ", error);
                 console.log(json);
@@ -174,3 +161,40 @@ RestKit.send(url, request, function(error, json){
 ```
 request object: the same object used for fetch()
 
+### Realm
+React Native's "asycnStorage" is a key-value pair storage, which is not ideal for the backbone concept.
+react native backbone uses a JavaScript library [Realm](https://realm.io/products/react-native/) for local storage
+
+#### Setting up Realm
+* RNBackbone has declared Realm as its dependency. But if you plan to use Realm in your project, you have to set it up using [rnpm](https://github.com/rnpm/rnpm):
+`rpm link realm`
+* Then you have to config RNBackbone to use Realm:
+```
+import RNBackbone from 'react-native-backbone';
+import realmStorage from 'react-native-backbone/src/storages/realm';
+RNBackbone.storage = realmStroage;
+```
+* Realm requires you to declare the schema of each Models before using them:
+```
+	const CarSchema = {
+	  name: 'Car',
+	  properties: {
+		 make:  'string',
+		 model: 'string',
+		 miles: {type: 'int', default: 0},
+	  }
+   }; 
+```
+_Realm doc about models: https://realm.io/docs/react-native/latest/#models_
+
+* Initialize realmStorage:
+	* Realm requires to provide **ALL** schemas before using it.
+	* realmStorage connector's `init()` methods allows RNBackbone to create a Realm instance using your schemas.
+```
+realmStorage.init({
+  models: [Car, People]
+});
+```
+_Realm doc about models: https://realm.io/docs/react-native/latest/#models_
+
+Now you can start using RNBackbone as normal
