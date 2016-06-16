@@ -9,8 +9,12 @@ As react native does not support Node.js HTTP module, react-native-backbone help
 To do:
 * syncronize with localStorage
 
-1. [Setup](#install)
-2. [RNBackbone.Model](#rnbackbonemodel)
+* [Setup](#install)
+* [RNBackbone.Model](#rnbackbonemodel)
+* [RNBackbone.Collection](#rnbackbonecollection)
+* [RNBackbone.Storage](#storage)
+	* [fetchStorage](#fetchstorage)
+	* [realmStorage](#realmstorage)
 
 ## Install
 
@@ -114,6 +118,21 @@ Delete this model to the server, this is DELETE method
 * To delete an model, ID has to be set.
 * option: (optional)
 ** option.headers: the headers to be added to the HTTP request
+
+## RNBackbone.Collection
+There is only one sync method supported for collection: fetch
+```
+var Cars = RNBackbone.Colletion.extend({
+	model: Car,
+	url: 'https://YOUR_URL/cars
+});
+var cars = new Cars();
+cars.fetch({
+	success: ()=>{
+		console.log(cars);
+	}
+})
+```
 
 ## Storage
 As of react-native-backbone 0.1.0, we provides two different storage connectors.
