@@ -10,7 +10,7 @@ To do:
 * syncronize with localStorage
 
 1. [Setup](https://github.com/peter4k/react-native-backbone#install)
-2. [RestKit.Model](https://github.com/peter4k/react-backbone#rnbackbonemodel)
+2. [RNBackbone.Model](https://github.com/peter4k/react-native-backbone#rnbackbonemodel)
 
 ## Install
 
