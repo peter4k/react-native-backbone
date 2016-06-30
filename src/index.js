@@ -8,12 +8,22 @@ var RNBackbone = {
 
 //Override sync methods for Model and Collections
 RNBackbone.Model = Backbone.Model.extend({
+    addDelegate(delegate){
+        this.on('change', function () {
+            delegate.forceUpdate();
+        })
+    },
     sync: function () {
         return RNBackbone.sync.apply(this, arguments);
     }
 });
 
 RNBackbone.Collection = Backbone.Collection.extend({
+    addDelegate(delegate){
+        this.on('change', function () {
+            delegate.forceUpdate();
+        })
+    },
     sync: function () {
         return RNBackbone.sync.apply(this, arguments);
     }

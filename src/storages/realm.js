@@ -21,7 +21,13 @@ var realm = {
             //realm does not auto-generate primaryKey, add the idAttribute as primaryKey to the realm schema
             var primaryKey = schema.primaryKey = schema.primaryKey || this.idAttribute || 'id';
             schema.properties[primaryKey] = 'string';
-            schemas.push(model.prototype.realmSchema);
+
+            var _schema = JSON.parse(JSON.stringify(schema));
+            _.each(_schema.properties, (value, key) => {
+                if (value == 'object') _schema.properties[key] = 'string';
+                else if (value.type == 'object') value.type = 'string';
+            });
+            schemas.push(_schema);
         });
         options.schema = schemas;
         realm._realm = new _Realm(options);
@@ -45,16 +51,17 @@ var realm = {
             'create': function () {
 
                 //For realm models, generate a shortid as primary key;
-                if (!model.get(schema.primaryKey)) {
-                    model.set(schema.primaryKey, ShortId.generate());
+                if (!model.get(primaryKeyAttr)) {
+                    model.set(primaryKeyAttr, ShortId.generate());
                 }
 
+                var json = model.toJSON();
                 //Save the models
                 realm._realm.write(() => {
-                    realm._realm.create(name, model.toJSON());
+                    realm._realm.create(name, realm.parseBackboneModel(json, model));
                 });
 
-                options.success();
+                options.success(json);
             },
             'read': function () {
 
@@ -65,7 +72,7 @@ var realm = {
 
                 var realmObj = realm.findModelObjects(model);
                 if (!realmObj) {
-                    return options.error(model, {realmError: 'Cannot find object'});
+                    return options.error({realmError: 'not_found', realmErrorMessage: 'Object not found'});
                 }
 
                 model.realmObject = realmObj;
@@ -73,18 +80,19 @@ var realm = {
             },
             'update': function () {
 
+                var json = model.toJSON();
                 //Save the models
                 realm._realm.write(() => {
-                    realm._realm.create(name, model.toJSON(), true);
+                    realm._realm.create(name, realm.parseBackboneModel(json, model), true);
                 });
 
-                options.success();
+                options.success(json);
             },
             'delete': function () {
                 //first find the Realm object
                 var realmObj = realm.findModelObjects(model);
                 if (!realmObj) {
-                    return options.error(model, {realmError: 'Cannot find object'});
+                    return options.error({realmError: 'Cannot find object'});
                 }
                 realm._realm.write(() => {
                     realm._realm.delete(realmObj);
@@ -93,12 +101,13 @@ var realm = {
             }
         };
 
-        if(!_.contains(_.keys(methodMap), method)){
+        if (!_.contains(_.keys(methodMap), method)) {
             throw 'Method ' + method + ' is not supported for models while using Realm';
         }
         methodMap[method](model, options);
     },
     syncCollection: function (method, collection, options) {
+        options = options || {}
         var Model = collection.model,
             name = Model.prototype.realmSchema.name;
 
@@ -108,14 +117,12 @@ var realm = {
 
         var methodMap = {
             'read': function () {
-                var realmObjects = realm.findObjects(name);
-                collection.set(_.toArray(realmObjects));
-                options.success();
+                var realmObjects = realm.findObjects(name, options, Model.prototype.realmSchema);
+                options.success(_.toArray(realmObjects));
             }
         };
 
-        console.log(_.keys(methodMap), method);
-        if(!_.contains(_.keys(methodMap), method)){
+        if (!_.contains(_.keys(methodMap), method)) {
             throw 'Method ' + method + ' is not supported for collections while using Realm';
         }
 
@@ -129,28 +136,71 @@ var realm = {
                 primaryKeyAttr = schema.primaryKey,
                 name = schema.name;
 
-            var filters = {};
-            filters[primaryKeyAttr] = models.get(primaryKeyAttr);
-            return realm.findObjects(name, filters)[0];
+            var options = {filters: {}};
+            options.filters[primaryKeyAttr] = models.get(primaryKeyAttr);
+            return realm.findObjects(name, options, schema)[0];
         }
     },
-    findObjects: function (name, filters) {
+    findObjects: function (name, options, schema) {
 
+        var filters = options.filters, sort = options.sort;
         var allRealmObj = realm._realm.objects(name);
 
         //If no filter, return all
-        if (!filters || _.keys(filters).length == 0) {
-            return allRealmObj;
+        if (filters && _.keys(filters).length > 0) {
+
+            //generate filter query
+            var params = [];
+            _.each(filters, function (value, field) {
+                params.push(field + ' = "' + value + '"');
+            });
+            let query = params.join(' AND ');
+
+            allRealmObj = allRealmObj.filtered(query);
         }
 
-        //generate filter query
-        var params = [];
-        _.each(filters, function (value, field) {
-            params.push(field + ' = "' + value + '"');
-        });
-        let query = params.join(' AND ');
+        if (sort) {
+            allRealmObj = allRealmObj.sorted(sort, options.sortDescending == true);
+        }
 
-        return allRealmObj.filtered(query);
+        return this.parseRealmObject(allRealmObj, schema);
+    },
+
+    /**
+     * Parse all "object" type to a stringify JSON in order to store it in Realm
+     * @param model the backbone model to be parsed
+     * @returns {object} the object to be saved
+     */
+    parseBackboneModel: function (_json, model) {
+        var json = _.clone(_json);
+        var schema = model.realmSchema.properties;
+        _.each(json, function (value, key) {
+            if (schema[key] == 'object' || schema[key].type == 'object') {
+                json[key] = JSON.stringify(value);
+            }
+        });
+        return json;
+    },
+
+    /**
+     * Realm object cannot be modified outside of "write" block, we create a copy of realm object for backbone to use
+     * Parse all "object" from stringify JSON to object
+     * @param realmObj
+     * @param schema
+     * @returns {Array}
+     */
+    parseRealmObject: function (realmObj, schema) {
+        var resultArray = [];
+        _.each(realmObj, function (obj, index) {
+            var resultObj = _.clone(obj);
+            _.each(resultObj, function (value, key) {
+                if (schema.properties[key] == 'object' || schema.properties[key].type == 'object') {
+                    resultObj[key] = JSON.parse(value);
+                }
+            });
+            resultArray.push(resultObj);
+        });
+        return resultArray;
     }
 };
 
