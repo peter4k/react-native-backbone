@@ -216,3 +216,20 @@ realmStorage.init({
 _Realm doc about models: https://realm.io/docs/react-native/latest/#models_
 
 Now you can start using RNBackbone as normal
+
+#### Realm Filter
+If you are fetching a collection and you want to filter the objects, you can pass the filter option to the fetch method:
+```
+var Cars = RNBackbone.Colletion.extend({
+	model: Car,
+	url: 'https://YOUR_URL/cars
+});
+var cars = new Cars();
+cars.fetch({
+	filters: {
+	    make: 'bmw'
+	},
+	success: ()=>{
+		console.log(cars);
+	}
+})
