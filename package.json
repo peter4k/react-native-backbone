@@ -1,6 +1,6 @@
 {
   "name": "react-native-backbone",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A React Native RESTful API kit that use the fetch method",
   "main": "src/index.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "url": "git+ssh://git@github.com/peter4k/react-native-backbone.git"
   },
   "keywords": [
+    "backbone",
     "react-native",
     "http",
     "rest"
