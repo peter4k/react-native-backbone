@@ -80,7 +80,7 @@ This will return ture if "id" attribute does not exist
 ```
 var option = {
 	headers:{
-		"Authentiacation":"Bearer SOME_TOKEN"
+		"Authentication":"Bearer SOME_TOKEN"
 	}
 }
 
