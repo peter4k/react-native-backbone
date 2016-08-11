@@ -173,7 +173,7 @@ var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphit
 
 fetchStorage.send(url, request, function(error, json){
                 if(error)
-                    console.log("encoutered error: ", error);
+                    console.log("encountered error: ", error);
                 console.log(json);
             });
 ```
