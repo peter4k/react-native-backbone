@@ -29,7 +29,7 @@ RNBackbone.Model is extended from backbone. The usages is almost the same as Bac
 #### Create a model class
 ```
 var Car = RNBackbone.Model.extend({
-	rootUrl = "http://www.your-domain.com/car"
+	rootUrl: "http://www.your-domain.com/car"
 	//More options to be added
 });
 ```
