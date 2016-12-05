@@ -7,6 +7,7 @@ var RNBackbone = {
 };
 
 //Override sync methods for Model and Collections
+
 RNBackbone.Model = Backbone.Model.extend({
     addDelegate(delegate){
         this.on('change', function () {

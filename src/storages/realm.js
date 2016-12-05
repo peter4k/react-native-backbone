@@ -90,7 +90,7 @@ var realm = {
             },
             'delete': function () {
                 //first find the Realm object
-                var realmObj = realm.findModelObjects(model);
+                var realmObj = realm.findModelObjects(model, {noParse: true});
                 if (!realmObj) {
                     return options.error({realmError: 'Cannot find object'});
                 }
@@ -128,7 +128,8 @@ var realm = {
 
         methodMap[method](collection, options);
     },
-    findModelObjects: function (models) {
+    findModelObjects: function (models, options) {
+        options = options || {};
         if (models instanceof Backbone.Collection) {
             //TODO: find for collections, this will be required if we want to implement Sync of local and API
         } else {
@@ -136,34 +137,37 @@ var realm = {
                 primaryKeyAttr = schema.primaryKey,
                 name = schema.name;
 
-            var options = {filters: {}};
-            options.filters[primaryKeyAttr] = models.get(primaryKeyAttr);
+            options.filters = [primaryKeyAttr + ' = "' + models.get(primaryKeyAttr) + '"'];
+            options.limit = 1;
             return realm.findObjects(name, options, schema)[0];
         }
     },
     findObjects: function (name, options, schema) {
 
-        var filters = options.filters, sort = options.sort;
+        var filters = options.filters, timeFilter = options.timeFilter, sort = options.sort;
         var allRealmObj = realm._realm.objects(name);
 
         //If no filter, return all
-        if (filters && _.keys(filters).length > 0) {
+        if (filters && filters.length > 0) {
 
             //generate filter query
-            var params = [];
-            _.each(filters, function (value, field) {
-                params.push(field + ' = "' + value + '"');
-            });
-            let query = params.join(' AND ');
+            let query = filters.join(' AND ');
 
             allRealmObj = allRealmObj.filtered(query);
+        }
+
+        if (timeFilter) {
+            _.each(timeFilter, function (tfilter) {
+                allRealmObj = allRealmObj.filtered(tfilter.query, tfilter.date);
+            })
         }
 
         if (sort) {
             allRealmObj = allRealmObj.sorted(sort, options.sortDescending == true);
         }
 
-        return this.parseRealmObject(allRealmObj, schema);
+        if(options.noParse) return allRealmObj;
+        return this.parseRealmObject(allRealmObj, schema, options);
     },
 
     /**
@@ -175,6 +179,10 @@ var realm = {
         var json = _.clone(_json);
         var schema = model.realmSchema.properties;
         _.each(json, function (value, key) {
+            console.log(key, value);
+            if(!schema[key]){
+                throw "Missing property definition for " + key + " in the Realm schema of object " + model.realmSchema.name
+            }
             if (schema[key] == 'object' || schema[key].type == 'object') {
                 json[key] = JSON.stringify(value);
             }
@@ -189,17 +197,24 @@ var realm = {
      * @param schema
      * @returns {Array}
      */
-    parseRealmObject: function (realmObj, schema) {
+    parseRealmObject: function (realmObj, schema, options) {
+        options = options || {};
         var resultArray = [];
-        _.each(realmObj, function (obj, index) {
-            var resultObj = _.clone(obj);
+        var start = options.skip || 0;
+        var max = realmObj.length;
+        if (options.limit) {
+            max = start + options.limit;
+            if (max > realmObj.length) max = realmObj.length;
+        }
+        for (let i = start; i < max; i++) {
+            var resultObj = _.clone(realmObj[i]);
             _.each(resultObj, function (value, key) {
                 if (schema.properties[key] == 'object' || schema.properties[key].type == 'object') {
-                    resultObj[key] = JSON.parse(value);
+                    resultObj[key] = value ? JSON.parse(value) : undefined;
                 }
             });
             resultArray.push(resultObj);
-        });
+        }
         return resultArray;
     }
 };

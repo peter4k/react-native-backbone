@@ -12,11 +12,11 @@ var methodMap = {
     'read': 'GET'
 };
 
-fetchStorage.sync = function(method, model, options) {
+fetchStorage.sync = function (method, model, options) {
 
     var type = methodMap[method];
 
-    if(typeof options === 'function'){
+    if (typeof options === 'function') {
         callback = options;
         options = null;
     }
@@ -30,18 +30,18 @@ fetchStorage.sync = function(method, model, options) {
         }
     };
 
-    if(type != 'GET' && type != 'HEAD'){
+    if (type != 'GET' && type != 'HEAD') {
         request['body'] = JSON.stringify(model.toJSON());
     }
 
-    if(fetchStorage.globalOptions.headers){
-        for(header in fetchStorage.globalOptions.headers){
+    if (fetchStorage.globalOptions.headers) {
+        for (header in fetchStorage.globalOptions.headers) {
             request.headers[header] = fetchStorage.globalOptions.headers[header];
         }
     }
 
-    if(options.headers){
-        for(header in options.headers){
+    if (options.headers) {
+        for (header in options.headers) {
             request.headers[header] = options.headers[header];
         }
     }
@@ -52,37 +52,79 @@ fetchStorage.sync = function(method, model, options) {
         url = _.result(model, 'url') || urlError();
     }
 
-    fetchStorage.send(url, request, function(error, json){
-        if(error){
+    if (fetchStorage.globalOptions.baseUrl) {
+        var base = fetchStorage.globalOptions.baseUrl;
+        if (base[base.length - 1] === "/") {
+            base = base.slice(0, -1);
+        }
+        url = base + url;
+    }
+
+    fetchStorage.send(url, request, function (error, json) {
+        console.log(error, json, options);
+        if (error) {
             options.error(error);
-        }else{
+        } else {
             options.success(json);
         }
     })
 };
 
-fetchStorage.send = function(url, req, callback){
-    var error = [];
-    if(!req.method) error.push("Method not defined");
-    if(error.length > 0) return callback(error, null);
-    fetch(url, req)
-        .then((response) => {
-            if(!((response.status >= 200 && response.status <= 208) || (response.status === 226))) {
-                var error = {};
-                error.status = response.status;
-                error.statusText = response.statusText;
-                error.body = response._bodyText;
-                callback(error, null);
-            }else{
-                return response.json()
+fetchStorage.send = async function (url, req, callback) {
+    if (callback) {
+        _send(url, req, callback);
+    } else {
+        try {
+            await _sendAsync(url, req);
+        } catch (e) {
+            throw e;
+        }
+    }
+};
+
+const _send = async function (url, req, callback) {
+    var error, json;
+    try {
+        json = await _sendAsync(url, req);
+    } catch (_error) {
+        error = _error;
+    }
+    callback(error, json);
+};
+
+const _sendAsync = async function (url, req) {
+    try {
+        var response = await fetch(url, req);
+        if (response.status == 200) {
+            var responseText = await response.text();
+            try {
+                return JSON.parse(responseText);
+            } catch (e) {
+                console.log(e);
+                return responseText;
             }
-        })
-        .then((json) => {
-            callback(null, json);
-        })
-        .catch(function(error) {
-            callback(error, null);
-        });
+        } else {
+            var error;
+            try {
+                var errorText = await response.text();
+                var errorJSON = JSON.parse(errorText);
+                error = errorJSON["error-message"] || errorText;
+            } catch (e) {
+                error = errorText || "";
+            }
+            throw {
+                error: new Error(error),
+                stats: response.status,
+                code: 104
+            }
+        }
+    } catch (e) {
+        throw e;
+    }
+};
+
+var urlError = function () {
+    throw new Error('A "url" property or function must be specified');
 };
 
 export default fetchStorage;
