@@ -31,7 +31,7 @@ fetchStorage.sync = function (method, model, options) {
     };
 
     if (type != 'GET' && type != 'HEAD') {
-        request['body'] = JSON.stringify(model.toJSON());
+        request['body'] = JSON.stringify(options.attrs || model.toJSON(options));
     }
 
     if (fetchStorage.globalOptions.headers) {
