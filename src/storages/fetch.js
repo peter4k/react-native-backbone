@@ -61,7 +61,6 @@ fetchStorage.sync = function (method, model, options) {
     }
 
     fetchStorage.send(url, request, function (error, json) {
-        console.log(error, json, options);
         if (error) {
             options.error(error);
         } else {
@@ -100,7 +99,6 @@ const _sendAsync = async function (url, req) {
             try {
                 return JSON.parse(responseText);
             } catch (e) {
-                console.log(e);
                 return responseText;
             }
         } else {
@@ -114,7 +112,7 @@ const _sendAsync = async function (url, req) {
             }
             throw {
                 error: new Error(error),
-                stats: response.status,
+                status: response.status,
                 code: 104
             }
         }
