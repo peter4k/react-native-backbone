@@ -60,6 +60,16 @@ fetchStorage.sync = function (method, model, options) {
         url = base + url;
     }
 
+    if (options.data) {
+        var params = [];
+        for (key in options.data) {
+            params.push(key + '=' + encodeURIComponent(options.data[key]));
+        }
+        if (params.length) {
+            url = url + '?' + params.join('&');
+        }
+    }
+
     fetchStorage.send(url, request, function (error, json) {
         if (error) {
             options.error(error);
