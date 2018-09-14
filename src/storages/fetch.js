@@ -104,7 +104,7 @@ const _send = async function (url, req, callback) {
 const _sendAsync = async function (url, req) {
     try {
         var response = await fetch(url, req);
-        if (response.status == 200) {
+        if((response.status >= 200 && response.status <= 208) || (response.status === 226)) {
             var responseText = await response.text();
             try {
                 return JSON.parse(responseText);
