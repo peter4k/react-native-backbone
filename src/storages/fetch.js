@@ -69,6 +69,8 @@ fetchStorage.sync = function (method, model, options) {
             url = url + '?' + params.join('&');
         }
     }
+    
+    model.trigger('request', model, request, options);
 
     fetchStorage.send(url, request, function (error, json) {
         if (error) {
