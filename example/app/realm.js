@@ -44,10 +44,8 @@ class RealmStorageExample extends Component {
         var businesses = this.businesses = new Businesses();
         business.save(null, {
             success: () =>{
-                console.log('called');
                 businesses.fetch({
                     success: () => {
-                        console.log('called2');
                         this.setState({
                             isLoading: false
                         })

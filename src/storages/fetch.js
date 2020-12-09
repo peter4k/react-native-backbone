@@ -60,8 +60,19 @@ fetchStorage.sync = function (method, model, options) {
         url = base + url;
     }
 
+    if (options.data) {
+        var params = [];
+        for (key in options.data) {
+            params.push(key + '=' + encodeURIComponent(options.data[key]));
+        }
+        if (params.length) {
+            url = url + '?' + params.join('&');
+        }
+    }
+    
+    model.trigger('request', model, request, options);
+
     fetchStorage.send(url, request, function (error, json) {
-        console.log(error, json, options);
         if (error) {
             options.error(error);
         } else {
@@ -95,12 +106,11 @@ const _send = async function (url, req, callback) {
 const _sendAsync = async function (url, req) {
     try {
         var response = await fetch(url, req);
-        if (response.status == 200) {
+        if((response.status >= 200 && response.status <= 208) || (response.status === 226)) {
             var responseText = await response.text();
             try {
                 return JSON.parse(responseText);
             } catch (e) {
-                console.log(e);
                 return responseText;
             }
         } else {
@@ -114,7 +124,7 @@ const _sendAsync = async function (url, req) {
             }
             throw {
                 error: new Error(error),
-                stats: response.status,
+                status: response.status,
                 code: 104
             }
         }

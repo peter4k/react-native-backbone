@@ -179,7 +179,6 @@ var realm = {
         var json = _.clone(_json);
         var schema = model.realmSchema.properties;
         _.each(json, function (value, key) {
-            console.log(key, value);
             if(!schema[key]){
                 throw "Missing property definition for " + key + " in the Realm schema of object " + model.realmSchema.name
             }
